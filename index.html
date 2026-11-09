@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>기분 맞춤 대식가 힐링 맛집 가이드</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts (Inter & Noto Sans KR) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Noto Sans KR"', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#fff7ed',
+              100: '#ffedd5',
+              200: '#fed7aa',
+              500: '#f97316',
+              600: '#ea580c',
+              700: '#c2410c',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background: radial-gradient(circle at top left, #fff7ed 0%, #fafaf9 60%, #f5f5f4 100%);
+      min-height: 100vh;
+    }
+    .custom-scroll::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background-color: #cbd5e1;
+      border-radius: 9999px;
+    }
+    .badge-pop {
+      animation: pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    @keyframes pop {
+      0% { transform: scale(0.9); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+  </style>
+</head>
+<body class="text-stone-800 antialiased selection:bg-orange-500 selection:text-white">
+
+  <!-- 상단 네비게이션 헤더 -->
+  <header class="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-stone-200">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center space-x-2">
+        <span class="text-2xl">🍲</span>
+        <div>
+          <h1 class="text-lg md:text-xl font-extrabold text-stone-900 tracking-tight flex items-center gap-2">
+            기분처방 든든상차림
+            <span class="text-xs bg-orange-100 text-orange-700 font-bold px-2 py-0.5 rounded-full border border-orange-200">대식가 전용</span>
+          </h1>
+        </div>
+      </div>
+      <div class="flex items-center gap-2 text-xs font-semibold text-stone-600 bg-stone-100 px-3 py-1.5 rounded-full border border-stone-200">
+        <i class="fa-solid fa-ban text-rose-500"></i>
+        <span>생선/어류 안심 제외</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- 메인 레이아웃 -->
+  <main class="max-w-6xl mx-auto px-4 py-8">
+
+    <!-- 상단 소개 배너 -->
+    <section class="text-center mb-8">
+      <h2 class="text-2xl md:text-4xl font-black text-stone-900 leading-tight mb-2">
+        오늘 당신의 마음과 배를 가득 채울 <br class="hidden sm:inline">
+        <span class="text-transparent bg-clip-text bg-gradient-to-r from-orange-600 to-amber-500">푸짐한 4종 풀코스</span>를 추천합니다!
+      </h2>
+      <p class="text-stone-600 text-sm md:text-base max-w-xl mx-auto">
+        "혼자 먹어도 든든하게, 여럿이 먹듯 풍성하게!" 생선 걱정 없이 육류, 분식, 든든한 탄수화물과 달콤한 디저트까지 한 번에 차려드립니다.
+      </p>
+    </section>
+
+    <!-- 입력 폼 영역 -->
+    <div class="bg-white rounded-3xl p-5 sm:p-7 shadow-xl shadow-stone-200/50 border border-stone-200 mb-10 transition-all duration-300">
+      
+      <!-- 1. 기분/감정 빠른 선택 -->
+      <div class="mb-6">
+        <label class="block text-sm font-bold text-stone-700 mb-3 flex items-center gap-1.5">
+          <i class="fa-solid fa-heart-pulse text-rose-500"></i> 지금 나의 주된 감정 상태는?
+        </label>
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2.5" id="moodButtons">
+          <!-- JS 렌더링 -->
+        </div>
+      </div>
+
+      <!-- 2. 감정 직접 서술 (자연어) -->
+      <div class="mb-6">
+        <label for="emotionText" class="block text-sm font-bold text-stone-700 mb-2 flex items-center justify-between">
+          <span class="flex items-center gap-1.5">
+            <i class="fa-regular fa-comment-dots text-orange-500"></i> 더 자세히 털어놓기 (선택)
+          </span>
+          <span class="text-xs text-stone-400 font-normal">자연스럽게 적어주시면 더 딱 맞는 조합을 찾아요</span>
+        </label>
+        <div class="relative">
+          <textarea id="emotionText" rows="2" 
+            placeholder="예: 오늘 야근하느라 너무 기운 빠지고 허기져서 고기랑 매운 게 미친듯이 당겨..." 
+            class="w-full p-3.5 pr-10 rounded-2xl bg-stone-50 border border-stone-200 focus:bg-white focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none text-stone-800 text-sm placeholder-stone-400 transition-all resize-none"></textarea>
+          <button id="clearTextBtn" class="absolute right-3 top-3 text-stone-400 hover:text-stone-600 hidden">
+            <i class="fa-solid fa-circle-xmark"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- 3. 대식가 전용 디테일 옵션 -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t border-stone-100 mb-6">
+        
+        <!-- 코스 스케일 -->
+        <div>
+          <label class="block text-xs font-bold text-stone-600 mb-2 flex items-center gap-1">
+            <i class="fa-solid fa-scale-unbalanced text-amber-500"></i> 상차림 규모
+          </label>
+          <div class="grid grid-cols-2 gap-2 text-xs font-semibold">
+            <label class="flex items-center justify-center p-2.5 rounded-xl border border-orange-500 bg-orange-50 text-orange-700 cursor-pointer text-center">
+              <input type="radio" name="scale" value="feast" checked class="hidden scale-radio">
+              <span>🍗 배 터지는 풀코스<br><span class="text-[10px] opacity-75 font-normal">(메인2+사이드+디저트)</span></span>
+            </label>
+            <label class="flex items-center justify-center p-2.5 rounded-xl border border-stone-200 hover:bg-stone-50 text-stone-700 cursor-pointer text-center">
+              <input type="radio" name="scale" value="buffet" class="hidden scale-radio">
+              <span>🥘 탄탄 삼단콤보<br><span class="text-[10px] opacity-75 font-normal">(메인2+사이드)</span></span>
+            </label>
+          </div>
+        </div>
+
+        <!-- 맵기 조절 -->
+        <div>
+          <label class="block text-xs font-bold text-stone-600 mb-2 flex items-center gap-1">
+            <i class="fa-solid fa-pepper-hot text-rose-500"></i> 매운맛 강도
+          </label>
+          <select id="spicyLevel" class="w-full p-2.5 rounded-xl bg-stone-50 border border-stone-200 text-xs font-semibold text-stone-700 focus:outline-none focus:ring-2 focus:ring-orange-500">
+            <option value="any">상관없음 (기분 맞춤 자동)</option>
+            <option value="mild">순한맛 / 달콤고소 (안 매운 게 최고)</option>
+            <option value="medium">신라면 수준의 적당한 칼칼함</option>
+            <option value="spicy">불닭 수준의 매운맛 폭탄 스트레스 격파</option>
+          </select>
+        </div>
+
+        <!-- 선호 카테고리 -->
+        <div>
+          <label class="block text-xs font-bold text-stone-600 mb-2 flex items-center gap-1">
+            <i class="fa-solid fa-utensils text-emerald-500"></i> 핵심 취향
+          </label>
+          <select id="foodTheme" class="w-full p-2.5 rounded-xl bg-stone-50 border border-stone-200 text-xs font-semibold text-stone-700 focus:outline-none focus:ring-2 focus:ring-orange-500">
+            <option value="all">모든 육류/탄수화물 대환영</option>
+            <option value="meat">고기 파티 (소·돼지·닭 집중)</option>
+            <option value="carb">탄수화물 폭탄 (면·밥·피자류)</option>
+            <option value="snack">단짠 분식류 (떡볶이·튀김·순대)</option>
+            <option value="soup">속 풀리는 깊은 국물 요리</option>
+          </select>
+        </div>
+
+      </div>
+
+      <!-- 추천 받기 액션 버튼 -->
+      <div class="text-center">
+        <button id="recommendBtn" class="w-full md:w-auto px-10 py-4 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-extrabold text-base md:text-lg rounded-2xl shadow-lg shadow-orange-500/30 transform active:scale-95 transition-all flex items-center justify-center gap-2 mx-auto">
+          <i class="fa-solid fa-wand-magic-sparkles"></i>
+          <span>대식가 맞춤 상차림 추천받기</span>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- 결과 표시 영역 (기본은 감춤) -->
+    <div id="resultSection" class="hidden">
+
+      <!-- 공감 멘트 & 총평 배너 -->
+      <div class="bg-gradient-to-r from-stone-900 to-stone-800 rounded-3xl p-6 md:p-8 text-white shadow-xl mb-8 relative overflow-hidden">
+        <div class="absolute -right-10 -bottom-10 opacity-10 text-9xl">🍖</div>
+        <div class="relative z-10">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-500/20 text-orange-300 text-xs font-bold mb-3 border border-orange-500/30">
+            <i class="fa-solid fa-comment-heart"></i> 오늘을 위한 멘탈 & 위장 케어 처방
+          </div>
+          <h3 id="empathyTitle" class="text-xl md:text-2xl font-black mb-2"></h3>
+          <p id="empathyDesc" class="text-stone-300 text-sm md:text-base leading-relaxed max-w-3xl"></p>
+        </div>
+      </div>
+
+      <!-- 추천 메뉴 4종 그리드 -->
+      <div class="mb-4 flex items-center justify-between">
+        <h4 class="text-lg md:text-xl font-black text-stone-900 flex items-center gap-2">
+          <i class="fa-solid fa-drumstick-bite text-orange-500"></i>
+          오늘의 푸짐한 풀세트 라인업
+        </h4>
+        <button id="reRollAllBtn" class="text-xs font-bold text-orange-600 hover:text-orange-700 bg-orange-50 hover:bg-orange-100 border border-orange-200 px-3 py-1.5 rounded-xl transition flex items-center gap-1.5">
+          <i class="fa-solid fa-arrows-rotate"></i> 전체 다시 추천
+        </button>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8" id="cardsContainer">
+        <!-- JS로 동적 생성 -->
+      </div>
+
+      <!-- 먹조합 꿀팁 및 시너지 안내 -->
+      <div class="bg-amber-50/70 border border-amber-200 rounded-2xl p-5 mb-8">
+        <h5 class="text-sm font-extrabold text-amber-900 flex items-center gap-2 mb-2">
+          <i class="fa-solid fa-lightbulb text-amber-500"></i>
+          대식가를 위한 200% 흡입 가이드
+        </h5>
+        <p id="comboTip" class="text-xs sm:text-sm text-amber-800 leading-relaxed"></p>
+      </div>
+
+      <!-- 공유 및 복사 액션 버튼들 -->
+      <div class="flex flex-wrap items-center justify-center gap-3">
+        <button id="copyMenuBtn" class="px-5 py-2.5 bg-stone-800 hover:bg-stone-900 text-white rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition">
+          <i class="fa-regular fa-clipboard"></i> 이 풀코스 메뉴 목록 복사하기
+        </button>
+        <button id="shareKakaoBtn" class="px-5 py-2.5 bg-amber-400 hover:bg-amber-500 text-stone-900 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition">
+          <i class="fa-solid fa-share-nodes"></i> 친구들과 메뉴 공유
+        </button>
+      </div>
+
+    </div>
+
+    <!-- 로딩 스켈레톤 상태 -->
+    <div id="loadingSection" class="hidden text-center py-16">
+      <div class="inline-block animate-bounce mb-4 text-4xl">🍳</div>
+      <h4 class="text-lg font-bold text-stone-800 mb-1">감정 분석 및 생선 배제 풀코스 조리 중...</h4>
+      <p class="text-xs text-stone-500">대식가의 취향을 저격할 육즙과 탄수화물의 황금 조합을 찾는 중입니다.</p>
+    </div>
+
+  </main>
+
+  <!-- 하단 메시지 토스트 알림창 -->
+  <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-stone-900/90 backdrop-blur-md text-white px-5 py-3 rounded-2xl text-xs font-semibold shadow-2xl flex items-center gap-2 transform translate-y-20 opacity-0 pointer-events-none transition-all duration-300 z-50">
+    <i class="fa-solid fa-check-circle text-orange-400 text-sm"></i>
+    <span id="toastMessage">메시지 내용</span>
+  </div>
+
+  <!-- 푸터 -->
+  <footer class="mt-16 border-t border-stone-200 py-6 text-center text-xs text-stone-400">
+    <p>기분처방 든든상차림 | 철저한 생선(어류) 제외 필터링 적용 | 든든하게 먹고 기운내세요!</p>
+  </footer>
+
+  <script>
+    // ==========================================
+    // 1. 감정 프리셋 정의
+    // ==========================================
+    const MOODS = [
+      { id: 'stress', label: '스트레스 만땅', icon: '💥', desc: '분노 폭발 직전! 화끈하게 부수고 싶다' },
+      { id: 'exhausted', label: '기력 방전/탈진', icon: '🔋', desc: '손가락 하나 까딱할 힘도 없는 하루' },
+      { id: 'depressed', label: '우울/허전함', icon: '🌧️', desc: '마음이 텅 비어 위로와 온기가 필요해' },
+      { id: 'happy', label: '축하/텐션 UP', icon: '🎉', desc: '오늘은 좋은 날! 풍악을 울리고 잔치하자' },
+      { id: 'anxious', label: '불안/긴장', icon: '☕', desc: '머릿속이 복잡하고 안정이 필요할 때' },
+      { id: 'craving', label: '야식 본능/폭식', icon: '🌙', desc: '칼로리 걱정 내려놓고 배 터지게 먹자' }
+    ];
+
+    // ==========================================
+    // 2. 생선(어류)이 100% 배제된 고품질 메뉴 풀 (Pool)
+    // ==========================================
+    const FOOD_DATABASE = {
+      // 1) 스트레스 폭발: 불맛, 캡사이신, 씹는 맛, 바삭한 튀김
+      stress: {
+        empathy: "스트레스가 극에 달했을 땐 참지 마세요. 땀 뻘뻘 흘리는 매운맛과 바삭한 고기로 뇌 속 스트레스 호르몬을 날려버릴 차례입니다!",
+        tip: "먼저 매운 고기 요리로 엔도르핀을 폭발시킨 뒤, 치즈나 바삭한 튀김으로 중화하고 마지막 시원한 디저트로 혀를 달래는 것이 정석입니다.",
+        main1: [
+          { name: "화끈한 매운 소갈비찜", spicy: "매운맛", desc: "야들야들한 갈비살에 쏙 밴 청양고추의 화끈한 불맛", tags: ["소고기", "매운맛", "든든단백질"] },
+          { name: "불맛 직화 뼈없는 닭발 & 오돌뼈", spicy: "불지옥", desc: "오독오독 씹는 맛과 숯불 향으로 스트레스 박살", tags: ["닭고기", "매운맛", "식감깡패"] },
+          { name: "매운 마라샹궈 (차돌박이+소시지 폭탄)", spicy: "얼얼함", desc: "생선완자 대신 차돌과 비엔나 소시지를 잔뜩 넣은 볶음", tags: ["소고기", "얼얼함", "중화풍"] }
+        ],
+        main2: [
+          { name: "두툼한 눈꽃 치즈 돈가스", spicy: "순한맛", desc: "바삭한 튀김옷 위에 자연산 모짜렐라 치즈가 폭포처럼", tags: ["돼지고기", "바삭함", "치즈폭포"] },
+          { name: "바삭 숯불 양념치킨 (순살 대용량)", spicy: "매콤달콤", desc: "육즙 가득 닭다리살을 숯불에 구워 특제 양념에 버무린 맛", tags: ["닭고기", "바삭함", "치킨"] },
+          { name: "치즈폭탄 찹스테이크", spicy: "순한맛", desc: "육즙 머금은 깍둑썰기 소고기와 구운 채소, 모짜렐라의 조합", tags: ["소고기", "단짠", "고기파티"] }
+        ],
+        side: [
+          { name: "화산 폭발 계란찜", desc: "뚝배기 위로 봉긋 솟아오른 보들보들 속 편한 달걀", tags: ["포슬포슬", "매운맛중화"] },
+          { name: "참기름 고소한 김가루 마요 주먹밥", desc: "고소한 김가루와 마요네즈, 단무지가 씹히는 탄수화물 짝꿍", tags: ["탄수화물", "단짠고소"] },
+          { name: "치즈 스틱 & 바삭 감자튀김", desc: "맥주를 부르는 짭짤하고 바삭한 든든 핑거푸드", tags: ["튀김", "바삭함"] }
+        ],
+        dessert: [
+          { name: "살얼음 동동 쿨피스 복숭아 빙수", desc: "얼얼해진 혀와 속을 단번에 달래주는 달콤 시원한 빙수", tags: ["빙수", "달콤시원"] },
+          { name: "초코 퐁당 브라우니 & 바닐라 아이스크림", desc: "진한 다크 초콜릿의 단맛으로 도파민을 채우는 마무리", tags: ["초콜릿", "극강달달"] }
+        ]
+      },
+
+      // 2) 피로/기력 방전: 영양 보양식, 고단백, 깊은 육수
+      exhausted: {
+        empathy: "오늘 정말 고생 많으셨어요. 방전된 몸에는 진한 고기 육즙과 뜨끈한 육수가 최고의 보약입니다. 아낌없이 든든하게 드세요.",
+        tip: "따뜻하고 깊은 고기 국물로 위장을 편안하게 데운 뒤, 육즙 가득한 구이 요리를 곁들여 단백질을 꽉꽉 충전하세요.",
+        main1: [
+          { name: "진한 한방 능이 닭백숙 (찰밥 포함)", spicy: "순한맛", desc: "은은한 약재 향과 부드럽게 찢어지는 닭고기, 든든한 찰밥", tags: ["닭고기", "보양식", "진한국물"] },
+          { name: "왕갈비 듬뿍 갈비탕 (면사리 추가)", spicy: "순한맛", desc: "살코기가 두툼하게 붙은 왕갈빗대와 맑고 깊은 양지 육수", tags: ["소고기", "보양식", "뜨끈한국물"] },
+          { name: "얼큰 한우 소머리 곰탕", spicy: "보통", desc: "콜라겐 듬뿍 쫄깃한 머릿고기와 진국 육수의 조화", tags: ["소고기", "원기회복", "진한국물"] }
+        ],
+        main2: [
+          { name: "달콤 짭조름한 뚝배기 소불고기", spicy: "순한맛", desc: "당면과 팽이버섯, 야들야들한 소고기를 밥에 쓱쓱", tags: ["소고기", "단짠", "밥도둑"] },
+          { name: "고추장 숯불 돼지불고기 쌈밥", spicy: "보통", desc: "불맛 가득 입힌 매콤 돼지고기와 신선한 쌈채소의 풍성함", tags: ["돼지고기", "쌈밥", "불맛"] },
+          { name: "훈제오리 부추 볶음구이", spicy: "순한맛", desc: "기름기는 쏙 빼고 담백함과 활력을 더한 오리고기 한 판", tags: ["오리고기", "활력충전", "담백"] }
+        ],
+        side: [
+          { name: "겉바속촉 해물 없는 녹두 빈대떡", spicy: "순한맛", desc: "고소한 돼지고기와 숙주나물이 씹히는 바삭한 전통 전", tags: ["부침개", "고소함"] },
+          { name: "쫀득한 치즈 계란말이", spicy: "순한맛", desc: "계란 서너 개를 아낌없이 말아 넣은 폭신한 단백질", tags: ["달걀", "포근함"] },
+          { name: "차돌박이 된장찌개", spicy: "보통", desc: "차돌박이의 구수한 기름이 녹아든 깊은 맛의 찌개", tags: ["된장", "구수한국물"] }
+        ],
+        dessert: [
+          { name: "살얼음 동동 전통 단호박 식혜", desc: "소화를 돕고 은은한 단맛으로 피로를 녹여주는 전통 음료", tags: ["전통음료", "소화도움"] },
+          { name: "따뜻한 꿀배 도라지차 & 약과", desc: "목과 기관지를 촉촉하게 적셔주는 달콤한 휴식", tags: ["따뜻함", "달콤한티"] }
+        ]
+      },
+
+      // 3) 우울/허전함: 탄수화물, 크림, 치즈, 포만감
+      depressed: {
+        empathy: "마음이 쓸쓸할 때는 위장이 가득 차야 온기가 돕니다. 부드럽고 묵직한 크림과 고소한 탄수화물이 당신의 마음을 안아줄 거예요.",
+        tip: "꾸덕한 크림 파스타와 치즈 크러스트 피자로 탄수화물과 지방의 시너지를 낸 후, 달콤한 디저트로 세로토닌을 끌어올려 보세요.",
+        main1: [
+          { name: "꾸덕한 베이컨 치즈 로제 파스타 (대용량)", spicy: "약간매콤", desc: "풍미 깊은 크림과 토마토의 만남에 훈제 베이컨이 듬뿍", tags: ["양식", "크리미", "탄수화물"] },
+          { name: "비프 함박스테이크 & 반숙 계란", spicy: "순한맛", desc: "육즙을 가둔 두툼한 소고기 패티에 데미글라스 소스가 듬뿍", tags: ["소고기", "부드러움", "단짠"] },
+          { name: "치즈 오븐 김치볶음밥 (스팸 폭탄)", spicy: "약간매콤", desc: "버터 향 나는 김치볶음밥 위에 노릇하게 구워진 치즈 이불", tags: ["돼지고기", "치즈", "한국식소울푸드"] }
+        ],
+        main2: [
+          { name: "더블 페퍼로니 치즈 크러스트 피자 (L)", spicy: "보통", desc: "도우가 보이지 않을 정도로 빽빽한 페퍼로니와 치즈의 향연", tags: ["피자", "페퍼로니", "치즈폭포"] },
+          { name: "소고기 패티 더블 베이컨 치즈버거 세트", spicy: "순한맛", desc: "진한 소고기 패티 2장과 바삭한 베이컨, 멜팅 체다치즈", tags: ["버거", "고기고기", "헤비급"] },
+          { name: "단짠단짠 마늘간장 순살치킨", spicy: "순한맛", desc: "달콤 짭조름한 마늘 소스가 촉촉하게 배어든 닭다리살", tags: ["치킨", "마늘간장", "단짠"] }
+        ],
+        side: [
+          { name: "단짠 쫀득 크림치즈볼 (6개)", desc: "한 입 베어 물면 달콤한 크림치즈가 사르르 퍼지는 사이드", tags: ["치즈볼", "단짠"] },
+          { name: "버팔로 핫봉 & 어니언링", desc: "매콤새콤한 버팔로 소스와 달콤 바삭한 양파튀김", tags: ["치킨윙", "튀김"] },
+          { name: "콘치즈 버터구이 철판", desc: "톡톡 터지는 옥수수 콘과 버터, 설탕, 마요네즈의 사기 조합", tags: ["콘치즈", "달콤고소"] }
+        ],
+        dessert: [
+          { name: "따뜻한 크로플 & 하겐다즈 바닐라", desc: "버터 풍미 폭발하는 크루아상 와플과 차가운 아이스크림의 온냉 조화", tags: ["와플", "아이스크림"] },
+          { name: "진한 벨기에 다크초코 라떼 (휘핑 듬뿍)", desc: "몸 속까지 달콤하게 녹여버리는 묵직한 핫초코", tags: ["초코음료", "포근함"] }
+        ]
+      },
+
+      // 4) 축하/기쁨: 파티, 잔치 음식, 고급 육류
+      happy: {
+        empathy: "오늘 당신에게 찾아온 기쁜 순간을 온 힘을 다해 축하합니다! 잔칫날에 걸맞게 소고기와 돼지고기, 닭고기가 총출동한 호화 파티를 즐기세요!",
+        tip: "메인 요리 두 가지를 번갈아 즐기며 푸짐한 한상의 묘미를 만끽하세요. 오늘은 칼로리 신경 쓰지 않고 만찬을 벌이는 날입니다.",
+        main1: [
+          { name: "소 꽃등심 & 안심 찹스테이크 한판", spicy: "순한맛", desc: "입안에서 사르르 녹는 프리미엄 소고기와 구운 아스파라거스", tags: ["소고기", "스테이크", "파티요리"] },
+          { name: "특제 간장 족발 & 매운 불족발 반반 (대)", spicy: "보통/매콤", desc: "야들야들 콜라겐 껍질과 촉촉한 살코기의 완벽한 반반 조화", tags: ["돼지고기", "족발", "잔치요리"] },
+          { name: "우삼겹 숙주 볶음 & 차돌 떡볶이", spicy: "약간매콤", desc: "불향 나는 우삼겹이 산더미처럼 올라간 프리미엄 떡볶이", tags: ["소고기", "분식업그레이드", "파티"] }
+        ],
+        main2: [
+          { name: "바삭 황금 후라이드 & 양념 반반 치킨", spicy: "보통", desc: "겉은 크리스피하고 속은 육즙 터지는 영원한 축하 메뉴", tags: ["치킨", "반반치킨", "클래식"] },
+          { name: "바베큐 폭립 플래터 (감자튀김+코울슬로)", spicy: "단짠", desc: "뼈에서 부드럽게 분리되는 진한 훈제 바베큐 등갈비", tags: ["돼지고기", "폭립", "바베큐"] },
+          { name: "육즙 팡팡 통삼겹살 오븐구이", spicy: "순한맛", desc: "겉은 크리스피하고 속은 촉촉하게 구워낸 황금빛 삼겹살", tags: ["돼지고기", "삼겹살", "겉바속촉"] }
+        ],
+        side: [
+          { name: "쟁반 막국수 (해물·생선 육수 배제)", spicy: "새콤달콤", desc: "새콤달콤 매콤한 양념에 쫄깃한 면발과 아삭한 채소 듬뿍", tags: ["면요리", "새콤달콤"] },
+          { name: "웨지 감자 & 체다 치즈 소스 딥", spicy: "순한맛", desc: "두툼한 감자 웨지에 진한 치즈 소스를 듬뿍 찍먹", tags: ["감자", "치즈딥"] },
+          { name: "소시지 베이컨 모둠 꼬치구이", spicy: "순한맛", desc: "육즙 터지는 수제 소시지와 훈제 베이컨의 파티 꼬치", tags: ["소시지", "맥주안주"] }
+        ],
+        dessert: [
+          { name: "딸기 생크림 케이크 조각 & 아메리카노", desc: "축하의 자리에 빠질 수 없는 부드러운 케이크와 깔끔한 커피", tags: ["케이크", "파티"] },
+          { name: "청포도 에이드 (점보 사이즈)", desc: "톡 쏘는 탄산과 상큼 달콤한 과즙으로 입안을 깔끔하게 리프레시", tags: ["에이드", "탄산청량"] }
+        ]
+      },
+
+      // 5) 불안/긴장: 자극적이지 않고 온화한 음식, 따뜻한 탄수화물
+      anxious: {
+        empathy: "긴장되고 마음이 초조할 때는 위장을 놀라게 하지 않는 부드럽고 따뜻한 음식이 정답입니다. 천천히 씹으며 평온을 되찾아보세요.",
+        tip: "자극적인 양념 대신 부드러운 육류와 죽, 달걀 요리로 소화기를 편안하게 이완시켜 주세요.",
+        main1: [
+          { name: "영양 닭죽 (잣 & 대추 고명 듬뿍)", spicy: "순한맛", desc: "부드럽게 푹 고아낸 닭고기와 속을 따스하게 감싸주는 쌀죽", tags: ["닭고기", "속편함", "소화잘됨"] },
+          { name: "부드러운 소고기 버섯 전골", spicy: "순한맛", desc: "신선한 표고, 느타리버섯과 얇게 썬 소고기가 어우러진 맑은 국물", tags: ["소고기", "전골", "따뜻한국물"] },
+          { name: "단호박 훈제오리 찜", spicy: "순한맛", desc: "달콤하고 포슬포슬한 단호박 속에 촉촉한 훈제오리가 듬뿍", tags: ["오리고기", "달콤단호박", "부드러움"] }
+        ],
+        main2: [
+          { name: "일본식 소고기 규동 (온천계란 톡)", spicy: "순한맛", desc: "특제 간장소스에 졸인 얇은 소고기 덮밥과 부드러운 수란", tags: ["소고기", "덮밥", "일본가정식"] },
+          { name: "치킨 가라아게 & 크리미 타르타르 (계란베이스)", spicy: "순한맛", desc: "바삭하게 튀겨낸 닭튀김을 부드러운 마요 에그 소스에 콕", tags: ["닭고기", "바삭촉촉", "안정감"] },
+          { name: "수제 궁중 떡갈비 (새송이 버섯구이)", spicy: "순한맛", desc: "다진 고기의 부드러운 육즙과 은은한 불향이 주는 평온함", tags: ["소고기/돼지고기", "떡갈비", "단짠"] }
+        ],
+        side: [
+          { name: "포슬포슬 감자 샐러드 & 모닝빵", spicy: "순한맛", desc: "버터 향 나는 빵에 부드럽게 으깬 감자 샐러드를 샌드", tags: ["감자", "부드러움"] },
+          { name: "일본식 보들보들 차완무시 (계란찜)", spicy: "순한맛", desc: "푸딩처럼 매끄럽고 삼키기 편한 따뜻한 계란찜", tags: ["달걀", "푸딩식감"] },
+          { name: "소고기 뭇국", spicy: "순한맛", desc: "시원하고 달큰한 무와 양지머리의 깊고 맑은 감칠맛", tags: ["국물", "속편함"] }
+        ],
+        dessert: [
+          { name: "따뜻한 카모마일 허니 티 & 버터 쿠키", desc: "신경 안정에 도움을 주는 허브티와 고소한 풍미의 쿠키", tags: ["허브티", "마음진정"] },
+          { name: "따끈한 단팥죽 & 인절미 떡", desc: "적당한 천연 단맛과 쫀득한 떡으로 마음에 평화를 선물", tags: ["단팥죽", "전통간식"] }
+        ]
+      },
+
+      // 6) 야식 본능 / 폭풍 흡입: 자극적인 단짠, 튀김, 떡볶이, 만두
+      craving: {
+        empathy: "다이어트는 내일부터! 오늘은 밤공기와 함께 위장을 한계까지 채우는 합법적 치팅데이입니다. 죄책감은 접어두고 즐겁게 흡입하세요!",
+        tip: "단짠 분식류와 갓 튀긴 튀김류를 조합해 씹는 쾌감을 극대화하고 탄산음료나 시원한 빙수로 완벽한 피날레를 완성하세요.",
+        main1: [
+          { name: "대용량 로제 치즈 떡볶이 (중국당면+분모자)", spicy: "보통/매콤", desc: "어묵(어류) 대신 쫄깃한 소시지와 베이컨, 떡이 듬뿍 들어간 로제", tags: ["분식", "꾸덕꾸덕", "야식1등"] },
+          { name: "바삭 숯불 양념 치킨 (떡사리 대량 추가)", spicy: "매콤달콤", desc: "야식계의 부동의 왕! 치밥하기 딱 좋은 중독적인 양념", tags: ["치킨", "야식왕", "치밥"] },
+          { name: "매콤 달콤 돼지 쪽갈비 구이", spicy: "약간매콤", desc: "손으로 잡고 뜯는 짭조름한 뼈고기의 원초적인 쾌감", tags: ["돼지고기", "손맛", "뜯는재미"] }
+        ],
+        main2: [
+          { name: "육즙 폭발 교자 만두 튀김 (고기만두)", spicy: "순한맛", desc: "생선 전혀 없는 100% 돼지고기와 부추로 채운 겉바속촉 만두", tags: ["돼지고기", "바삭만두", "육즙"] },
+          { name: "치즈 불닭 볶음면 & 삼각김밥 꿀조합", spicy: "매운맛", desc: "편의점 최고의 야식 발명품! 매운 면에 고소한 치즈 범벅", tags: ["면요리", "매운야식", "편의점꿀조합"] },
+          { name: "두툼한 소고기 칠리 치즈 프라이즈", spicy: "보통", desc: "감자튀김 위에 진한 미트 칠리 소스와 치즈를 듬뿍 얹은 요리", tags: ["소고기", "미국맛", "야식폭탄"] }
+        ],
+        side: [
+          { name: "바삭 고구마 치즈 튀김 & 김말이", spicy: "순한맛", desc: "떡볶이 국물에 푹 찍어 먹는 든든한 탄수화물 튀김", tags: ["튀김", "떡볶이단짝"] },
+          { name: "달콤 버터 갈릭 감자튀김", spicy: "순한맛", desc: "청년다방 스타일의 중독성 넘치는 버터 갈릭 파우더와 소스", tags: ["감자튀김", "단짠단짠"] },
+          { name: "통통 비엔나 소시지 야채볶음", spicy: "단짠", desc: "케첩과 돈가스 소스로 볶아낸 추억의 밥도둑 쏘야", tags: ["소시지", "추억의맛"] }
+        ],
+        dessert: [
+          { name: "얼음 동동 콜라 & 사이다 (대용량 1.5L)", desc: "느끼함을 단번에 날려버리고 다시 시작하게 만드는 청량감", tags: ["탄산음료", "소화제"] },
+          { name: "초코 츄러스 & 생크림 딥", desc: "시나몬 슈가가 뿌려진 바삭한 츄러스를 달콤한 크림에 퐁당", tags: ["츄러스", "야식디저트"] }
+        ]
+      }
+    };
+
+    // 상태 관리
+    let selectedMood = 'stress';
+    let currentCourse = null;
+
+    // DOM 요소 캐싱
+    const moodButtonsContainer = document.getElementById('moodButtons');
+    const emotionTextInput = document.getElementById('emotionText');
+    const clearTextBtn = document.getElementById('clearTextBtn');
+    const spicySelect = document.getElementById('spicyLevel');
+    const foodThemeSelect = document.getElementById('foodTheme');
+    const recommendBtn = document.getElementById('recommendBtn');
+    const resultSection = document.getElementById('resultSection');
+    const loadingSection = document.getElementById('loadingSection');
+    const empathyTitle = document.getElementById('empathyTitle');
+    const empathyDesc = document.getElementById('empathyDesc');
+    const cardsContainer = document.getElementById('cardsContainer');
+    const comboTip = document.getElementById('comboTip');
+    const reRollAllBtn = document.getElementById('reRollAllBtn');
+    const copyMenuBtn = document.getElementById('copyMenuBtn');
+    const shareKakaoBtn = document.getElementById('shareKakaoBtn');
+    const toast = document.getElementById('toast');
+    const toastMessage = document.getElementById('toastMessage');
+
+    // ==========================================
+    // 3. UI 초기화 및 렌더링
+    // ==========================================
+    function initMoodButtons() {
+      moodButtonsContainer.innerHTML = '';
+      MOODS.forEach(m => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = `p-3 rounded-2xl border text-center transition-all flex flex-col items-center justify-center gap-1.5 ${
+          selectedMood === m.id
+            ? 'border-orange-500 bg-orange-50 text-orange-700 shadow-sm ring-2 ring-orange-400 font-bold'
+            : 'border-stone-200 bg-stone-50/50 hover:bg-stone-100 text-stone-600 font-medium'
+        }`;
+        btn.innerHTML = `
+          <span class="text-2xl">${m.icon}</span>
+          <span class="text-xs tracking-tight">${m.label}</span>
+        `;
+        btn.addEventListener('click', () => {
+          selectedMood = m.id;
+          initMoodButtons();
+        });
+        moodButtonsContainer.appendChild(btn);
+      });
+    }
+
+    // 자연어 텍스트 분석 (간단한 키워드 감지)
+    function analyzeTextMood(text) {
+      if (!text || text.trim() === '') return null;
+      const lower = text.toLowerCase();
+
+      if (lower.includes('힘들') || lower.includes('지치') || lower.includes('방전') || lower.includes('피곤') || lower.includes('야근') || lower.includes('기운')) {
+        return 'exhausted';
+      }
+      if (lower.includes('화나') || lower.includes('짜증') || lower.includes('열받') || lower.includes('스트레스') || lower.includes('빡치') || lower.includes('부수')) {
+        return 'stress';
+      }
+      if (lower.includes('우울') || lower.includes('슬프') || lower.includes('외로') || lower.includes('쓸쓸') || lower.includes('허전')) {
+        return 'depressed';
+      }
+      if (lower.includes('신나') || lower.includes('행복') || lower.includes('축하') || lower.includes('합격') || lower.includes('기뻐') || lower.includes('파티')) {
+        return 'happy';
+      }
+      if (lower.includes('불안') || lower.includes('떨려') || lower.includes('긴장') || lower.includes('걱정') || lower.includes('초조')) {
+        return 'anxious';
+      }
+      if (lower.includes('배고') || lower.includes('야식') || lower.includes('폭식') || lower.includes('먹고싶') || lower.includes('당겨')) {
+        return 'craving';
+      }
+      return null;
+    }
+
+    // 토스트 팝업 알림 헬퍼
+    function showToast(message) {
+      toastMessage.innerText = message;
+      toast.classList.remove('translate-y-20', 'opacity-0', 'pointer-events-none');
+      toast.classList.add('translate-y-0', 'opacity-100');
+      setTimeout(() => {
+        toast.classList.remove('translate-y-0', 'opacity-100');
+        toast.classList.add('translate-y-20', 'opacity-0', 'pointer-events-none');
+      }, 2500);
+    }
+
+    // ==========================================
+    // 4. 대식가 맞춤 추천 생성 로직
+    // ==========================================
+    function generateCourse() {
+      // 1) 텍스트 입력을 우선 분석하여 자동 매칭, 없을 경우 선택된 버튼 기준
+      const detected = analyzeTextMood(emotionTextInput.value);
+      const targetMoodKey = detected || selectedMood;
+      const moodData = FOOD_DATABASE[targetMoodKey] || FOOD_DATABASE['stress'];
+
+      // 사용자 선택 옵션 확인
+      const scaleRadio = document.querySelector('input[name="scale"]:checked');
+      const scale = scaleRadio ? scaleRadio.value : 'feast';
+      const spicyPref = spicySelect.value;
+      const themePref = foodThemeSelect.value;
+
+      // 무작위 선택 헬퍼
+      const pickRandom = (arr) => arr[Math.floor(Math.random() * arr.length)];
+
+      // 메인 1, 메인 2, 사이드, 디저트 픽업
+      const m1 = pickRandom(moodData.main1);
+      const m2 = pickRandom(moodData.main2);
+      const side = pickRandom(moodData.side);
+      const dessert = pickRandom(moodData.dessert);
+
+      // 전체 코스 객체 조립
+      const course = {
+        moodKey: targetMoodKey,
+        empathy: moodData.empathy,
+        tip: moodData.tip,
+        items: [
+          { role: '메인 요리 ①', icon: '🥩', ...m1, categoryKey: 'main1' },
+          { role: '메인 요리 ②', icon: '🍗', ...m2, categoryKey: 'main2' },
+          { role: '든든 사이드', icon: '🍳', ...side, categoryKey: 'side' }
+        ]
+      };
+
+      // 풀코스일 경우 디저트/후식 포함 (3단 콤보 선택 시 제외 가능)
+      if (scale === 'feast') {
+        course.items.push({ role: '마무리 디저트/음료', icon: '🍧', ...dessert, categoryKey: 'dessert' });
+      }
+
+      return course;
+    }
+
+    // 개별 메뉴 다시 뽑기 (리롤 기능)
+    function reRollItem(index) {
+      if (!currentCourse) return;
+      const targetItem = currentCourse.items[index];
+      const moodData = FOOD_DATABASE[currentCourse.moodKey];
+      const pool = moodData[targetItem.categoryKey];
+      
+      // 현재 메뉴와 다른 새로운 메뉴 선택
+      let candidates = pool.filter(p => p.name !== targetItem.name);
+      if (candidates.length === 0) candidates = pool;
+      const newItem = candidates[Math.floor(Math.random() * candidates.length)];
+
+      currentCourse.items[index] = {
+        role: targetItem.role,
+        icon: targetItem.icon,
+        categoryKey: targetItem.categoryKey,
+        ...newItem
+      };
+
+      renderCards();
+      showToast(`'${newItem.name}'(으)로 교체되었습니다!`);
+    }
+
+    // ==========================================
+    // 5. 화면 렌더링 함수
+    // ==========================================
+    function renderCards() {
+      cardsContainer.innerHTML = '';
+
+      currentCourse.items.forEach((item, idx) => {
+        const card = document.createElement('div');
+        card.className = "bg-white rounded-2xl p-5 border border-stone-200 shadow-sm hover:shadow-md transition-all flex flex-col justify-between badge-pop relative group";
+
+        const tagsHtml = (item.tags || []).map(t => 
+          `<span class="text-[11px] bg-stone-100 text-stone-600 px-2 py-0.5 rounded-md font-medium">#${t}</span>`
+        ).join(' ');
+
+        card.innerHTML = `
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-xs font-bold px-2.5 py-1 rounded-full bg-orange-100 text-orange-700 flex items-center gap-1">
+                <span>${item.icon}</span> ${item.role}
+              </span>
+              <button onclick="reRollItem(${idx})" title="다른 메뉴로 바꾸기" class="text-stone-400 hover:text-orange-600 text-xs p-1.5 rounded-lg hover:bg-orange-50 transition">
+                <i class="fa-solid fa-rotate text-xs"></i>
+              </button>
+            </div>
+            <h5 class="text-base sm:text-lg font-black text-stone-900 mb-1.5 leading-snug">${item.name}</h5>
+            <p class="text-xs text-stone-500 mb-3 leading-relaxed">${item.desc}</p>
+          </div>
+          <div class="pt-3 border-t border-stone-100 mt-2">
+            <div class="flex flex-wrap gap-1 mb-2">
+              ${tagsHtml}
+            </div>
+            ${item.spicy ? `
+              <div class="text-[11px] font-semibold text-rose-600 flex items-center gap-1">
+                <i class="fa-solid fa-fire text-rose-500"></i> 맵기: ${item.spicy}
+              </div>
+            ` : ''}
+          </div>
+        `;
+        cardsContainer.appendChild(card);
+      });
+    }
+
+    function displayResult(course) {
+      currentCourse = course;
+      
+      const moodObj = MOODS.find(m => m.id === course.moodKey) || MOODS[0];
+      empathyTitle.innerHTML = `${moodObj.icon} "${moodObj.label}" 상태인 당신을 위한 처방전`;
+      empathyDesc.innerText = course.empathy;
+      comboTip.innerText = course.tip;
+
+      renderCards();
+
+      loadingSection.classList.add('hidden');
+      resultSection.classList.remove('hidden');
+
+      // 부드러운 스크롤 이동
+      resultSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    // ==========================================
+    // 6. 이벤트 리스너 등록
+    // ==========================================
+    // 텍스트 지우기 버튼 토글
+    emotionTextInput.addEventListener('input', () => {
+      clearTextBtn.classList.toggle('hidden', emotionTextInput.value.length === 0);
+    });
+
+    clearTextBtn.addEventListener('click', () => {
+      emotionTextInput.value = '';
+      clearTextBtn.classList.add('hidden');
+      emotionTextInput.focus();
+    });
+
+    // 라디오 버튼 시각 피드백
+    document.querySelectorAll('.scale-radio').forEach(radio => {
+      radio.addEventListener('change', (e) => {
+        document.querySelectorAll('.scale-radio').forEach(r => {
+          const parent = r.closest('label');
+          if (r.checked) {
+            parent.className = "flex items-center justify-center p-2.5 rounded-xl border border-orange-500 bg-orange-50 text-orange-700 cursor-pointer text-center";
+          } else {
+            parent.className = "flex items-center justify-center p-2.5 rounded-xl border border-stone-200 hover:bg-stone-50 text-stone-700 cursor-pointer text-center";
+          }
+        });
+      });
+    });
+
+    // 추천 버튼 클릭 이벤트
+    recommendBtn.addEventListener('click', () => {
+      resultSection.classList.add('hidden');
+      loadingSection.classList.remove('hidden');
+
+      // 0.4초 로딩 딜레이로 쾌적한 피드백 제공
+      setTimeout(() => {
+        const course = generateCourse();
+        displayResult(course);
+      }, 400);
+    });
+
+    // 전체 다시 추천
+    reRollAllBtn.addEventListener('click', () => {
+      const course = generateCourse();
+      displayResult(course);
+      showToast("새로운 조합으로 풀코스가 재구성되었습니다!");
+    });
+
+    // 메뉴 텍스트 복사 (iFrame 지원 위해 execCommand 대체 탑재)
+    copyMenuBtn.addEventListener('click', () => {
+      if (!currentCourse) return;
+      const textLines = [
+        `[오늘의 기분처방 대식가 풀코스]`,
+        ...currentCourse.items.map(i => `- ${i.role}: ${i.name}`)
+      ].join('\n');
+
+      const textarea = document.createElement('textarea');
+      textarea.value = textLines;
+      document.body.appendChild(textarea);
+      textarea.select();
+      try {
+        document.execCommand('copy');
+        showToast("메뉴 조합이 클립보드에 복사되었습니다!");
+      } catch (err) {
+        showToast("복사에 실패했습니다.");
+      }
+      document.body.removeChild(textarea);
+    });
+
+    // 공유 버튼 이벤트
+    shareKakaoBtn.addEventListener('click', () => {
+      showToast("친구들과 함께 먹을 맛있는 조합을 공유해보세요!");
+    });
+
+    // ==========================================
+    // 앱 초기 실행
+    // ==========================================
+    window.onload = function() {
+      initMoodButtons();
+    };
+  </script>
+</body>
+</html>
